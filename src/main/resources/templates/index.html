@@ -2,11 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="utf-8"/>
-		<link rel='stylesheet' href='/webjars/bootstrap/3.3.6/css/bootstrap.min.css'/>
-    	<script type="text/javascript" src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     	<script type="text/javascript" src="/webjars/jquery/2.2.0/jquery.min.js"></script>
+    	<script type="text/javascript" src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<link rel='stylesheet' href='/webjars/bootstrap/3.3.6/css/bootstrap.min.css'/>
 	</head>
 	<body>
-		<p th:text="${name}">Name</p>
+		<form action="upload" th:action="@{/csvFile}" method="post" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="playersCsv">Csv input</label>
+				<input type="file" name="playersCsv" id="playersCsv" />
+				<input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>
+				<button type="submit" class="btn btn-default">Upload</button>
+			</div>
+		</form>
 	</body>
 </html>
