@@ -37,4 +37,38 @@ public class MiscStats {
         return points;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + assists;
+        result = prime * result + blocks;
+        result = prime * result + points;
+        result = prime * result + steals;
+        result = prime * result + turnovers;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MiscStats other = (MiscStats) obj;
+        if (assists != other.assists)
+            return false;
+        if (blocks != other.blocks)
+            return false;
+        if (points != other.points)
+            return false;
+        if (steals != other.steals)
+            return false;
+        if (turnovers != other.turnovers)
+            return false;
+        return true;
+    }
+
 }

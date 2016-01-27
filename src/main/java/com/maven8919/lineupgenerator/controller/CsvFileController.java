@@ -1,13 +1,17 @@
 package com.maven8919.lineupgenerator.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.maven8919.lineupgenerator.domain.Player;
 import com.maven8919.lineupgenerator.service.PlayerListerService;
 
 @Controller
@@ -21,9 +25,15 @@ public class CsvFileController {
     @Autowired
     private PlayerListerService playerListerService;
 
+    @ModelAttribute(PLAYERS_MODEL_ATTRIBUTE_NAME)
+    public List<Player> players(@RequestParam(FILE_FORM_NAME) MultipartFile file) {
+        List<Player> players = playerListerService.listPlayers(file);
+        List<Player> starters = playerListerService.generateStarters(players);
+        return playerListerService.listPlayers(file);
+    }
+    
     @RequestMapping(value=CSV_FILE_REQUEST_MAPPING, method=RequestMethod.POST)
     public String csvFile(@RequestParam(FILE_FORM_NAME) MultipartFile file, Model model) {
-        model.addAttribute(PLAYERS_MODEL_ATTRIBUTE_NAME, playerListerService.listPlayers(file));
         return PLAYERS_LOGICAL_VIEW_NAME;
     }
     
