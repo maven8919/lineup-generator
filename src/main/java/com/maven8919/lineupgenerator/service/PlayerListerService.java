@@ -84,7 +84,7 @@ public class PlayerListerService {
                                     if (f.equals(sf) || f.equals(pf)) continue;
                                     for (Player any : allRelevantPlayersBasedOnMinutes) {
                                         count++;
-                                        if (count == 100000) {
+                                        if (count == 999999999) {
                                             System.out.println("Still running");
                                             count = 0;
                                         }
