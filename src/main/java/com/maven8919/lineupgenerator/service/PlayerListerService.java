@@ -70,6 +70,7 @@ public class PlayerListerService {
     }
 
     private List<Player> generateStartersFromSortedLists() {
+        int count = 0;
         List<Player> result = null;
         Double maxValue = Double.MIN_VALUE;
         for (Player pg : pointGuards) {
@@ -82,15 +83,20 @@ public class PlayerListerService {
                                 for (Player f : forwards) {
                                     if (f.equals(sf) || f.equals(pf)) continue;
                                     for (Player any : allRelevantPlayersBasedOnMinutes) {
+                                        count++;
+                                        if (count == 100000) {
+                                            System.out.println("Still running");
+                                            count = 0;
+                                        }
                                         if (any.equals(pg) || any.equals(sg) || any.equals(sf) || any.equals(pf) || any.equals(c) || any.equals(g) || any.equals(f)) continue;
                                         int totalSalary = totalSalary(pg, sg, sf, pf, c, g, f, any);
                                         double totalValue = totalValue(pg, sg, sf, pf, c, g, f, any);
                                         if (totalSalary <= 200 && totalValue > maxValue) {
                                             result = Arrays.asList(pg, sg, sf, pf, c, g, f, any);
                                             maxValue = totalValue(pg, sg, sf, pf, c, g, f, any);
-                                            System.out.println("Current best lineup: " + pg.getPlayerName() + "-" + sg.getPlayerName() + "-" + sf.getPlayerName() + "-" +
-                                                    pf.getPlayerName() + "-" + c.getPlayerName() + "-" + g.getPlayerName() + "-" +
-                                                    f.getPlayerName() + "-" + any.getPlayerName() +
+                                            System.out.println("Current best lineup: " + pg.getPlayerName() + "-" + sg.getPlayerName() + "-" + g.getPlayerName() + "-" +
+                                                    sf.getPlayerName() + "-" + pf.getPlayerName() + "-" + f.getPlayerName() + "-" +
+                                                    c.getPlayerName() + "-" + any.getPlayerName() +
                                                     " with salary: " + totalSalary + " and total value of: " + totalValue);
                                         }
                                     }
