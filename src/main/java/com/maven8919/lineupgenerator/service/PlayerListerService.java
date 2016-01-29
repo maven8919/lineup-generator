@@ -12,6 +12,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -30,15 +31,18 @@ import com.maven8919.lineupgenerator.domain.FreeThrowStats;
 import com.maven8919.lineupgenerator.domain.Location;
 import com.maven8919.lineupgenerator.domain.MiscStats;
 import com.maven8919.lineupgenerator.domain.Player;
-import com.maven8919.lineupgenerator.domain.StatLine;
 import com.maven8919.lineupgenerator.domain.Position;
 import com.maven8919.lineupgenerator.domain.ReboundStats;
+import com.maven8919.lineupgenerator.domain.StatLine;
 import com.maven8919.lineupgenerator.domain.Team;
 import com.maven8919.lineupgenerator.domain.ThreePointStats;
+
+import org.slf4j.Logger;
 
 @Service
 public class PlayerListerService {
     
+    private static final Logger log = LoggerFactory.getLogger(PlayerListerService.class); 
     private static final int BUDGET = 200;
 
     @Autowired
@@ -54,7 +58,9 @@ public class PlayerListerService {
     private List<Player> forwards;
 
     public List<Player> listPlayers(MultipartFile file) {
+        log.info("Started parsing players!");
         List<Player> players = parseCsv(file);
+        log.info("Finished parsing players!");
         return players;
     }
     
@@ -72,7 +78,7 @@ public class PlayerListerService {
     }
 
     private List<Player> generateStartersFromSortedLists() {
-        System.out.println("Starting generating players!!");
+        log.info("Started generating starters! info");
         int count = 0;
         List<Player> result = null;
         Double maxValue = Double.MIN_VALUE;
@@ -94,7 +100,7 @@ public class PlayerListerService {
                                         if (salaryIsGreaterThanBudget(Arrays.asList(pg, sg, sf, pf, c, g, f, any))) continue;
                                         count++;
                                         if (count == 999999999) {
-                                            System.out.println("Still running");
+                                            log.info("Still running");
                                             count = 0;
                                         }
                                         if (any.equals(pg) || any.equals(sg) || any.equals(sf) || any.equals(pf) || any.equals(c) || any.equals(g) || any.equals(f)) continue;
@@ -103,7 +109,7 @@ public class PlayerListerService {
                                         if (totalSalary <= BUDGET && totalValue > maxValue) {
                                             result = Arrays.asList(pg, sg, sf, pf, c, g, f, any);
                                             maxValue = totalValue(pg, sg, sf, pf, c, g, f, any);
-                                            System.out.println("Current best lineup: " + pg.getPlayerName() + "-" + sg.getPlayerName() + "-" + g.getPlayerName() + "-" +
+                                            log.info("Current best lineup: " + pg.getPlayerName() + "-" + sg.getPlayerName() + "-" + g.getPlayerName() + "-" +
                                                     sf.getPlayerName() + "-" + pf.getPlayerName() + "-" + f.getPlayerName() + "-" +
                                                     c.getPlayerName() + "-" + any.getPlayerName() +
                                                     " with salary: " + totalSalary + " and total value of: " + totalValue);
@@ -116,6 +122,7 @@ public class PlayerListerService {
                 }
             }
         }
+        log.info("Finished generating starters!");
         return result;
     }
     
