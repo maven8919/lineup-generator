@@ -39,6 +39,8 @@ import com.maven8919.lineupgenerator.domain.ThreePointStats;
 @Service
 public class PlayerListerService {
     
+    private static final int BUDGET = 200;
+
     @Autowired
     private Environment env;
     
@@ -70,19 +72,26 @@ public class PlayerListerService {
     }
 
     private List<Player> generateStartersFromSortedLists() {
+        System.out.println("Starting generating players!!");
         int count = 0;
         List<Player> result = null;
         Double maxValue = Double.MIN_VALUE;
         for (Player pg : pointGuards) {
             for (Player sg : shootingGuards) {
                 for (Player sf : smallForwards) {
+                    if (salaryIsGreaterThanBudget(Arrays.asList(pg, sg, sf))) continue;
                     for (Player pf : powerForwards) {
+                        if (salaryIsGreaterThanBudget(Arrays.asList(pg, sg, sf, pf))) continue;
                         for (Player c : centers) {
+                            if (salaryIsGreaterThanBudget(Arrays.asList(pg, sg, sf, pf, c))) continue;
                             for (Player g : guards) {
                                 if (g.equals(pg) || g.equals(sg)) continue;
+                                if (salaryIsGreaterThanBudget(Arrays.asList(pg, sg, sf, pf, c, g))) continue;
                                 for (Player f : forwards) {
                                     if (f.equals(sf) || f.equals(pf)) continue;
+                                    if (salaryIsGreaterThanBudget(Arrays.asList(pg, sg, sf, pf, c, g, f))) continue;
                                     for (Player any : allRelevantPlayersBasedOnMinutes) {
+                                        if (salaryIsGreaterThanBudget(Arrays.asList(pg, sg, sf, pf, c, g, f, any))) continue;
                                         count++;
                                         if (count == 999999999) {
                                             System.out.println("Still running");
@@ -91,7 +100,7 @@ public class PlayerListerService {
                                         if (any.equals(pg) || any.equals(sg) || any.equals(sf) || any.equals(pf) || any.equals(c) || any.equals(g) || any.equals(f)) continue;
                                         int totalSalary = totalSalary(pg, sg, sf, pf, c, g, f, any);
                                         double totalValue = totalValue(pg, sg, sf, pf, c, g, f, any);
-                                        if (totalSalary <= 200 && totalValue > maxValue) {
+                                        if (totalSalary <= BUDGET && totalValue > maxValue) {
                                             result = Arrays.asList(pg, sg, sf, pf, c, g, f, any);
                                             maxValue = totalValue(pg, sg, sf, pf, c, g, f, any);
                                             System.out.println("Current best lineup: " + pg.getPlayerName() + "-" + sg.getPlayerName() + "-" + g.getPlayerName() + "-" +
@@ -108,6 +117,14 @@ public class PlayerListerService {
             }
         }
         return result;
+    }
+    
+    private boolean salaryIsGreaterThanBudget(List<Player> players) {
+        int salary = 0;
+        for (Player player : players) {
+            salary += player.getSalary();
+        }
+        return salary > BUDGET;
     }
     
     private int totalSalary(Player pg, Player sg, Player sf, Player pf, Player c, Player g, Player f, Player any) {
