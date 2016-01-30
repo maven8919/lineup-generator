@@ -3,7 +3,6 @@ package com.maven8919.lineupgenerator.service;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +14,6 @@ import org.ojalgo.optimisation.Expression;
 import org.ojalgo.optimisation.ExpressionsBasedModel;
 import org.ojalgo.optimisation.Optimisation;
 import org.ojalgo.optimisation.Variable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -44,7 +41,6 @@ import com.maven8919.lineupgenerator.domain.ThreePointStats;
 @Service
 public class PlayerListerService {
 
-	private static final Logger log = LoggerFactory.getLogger(PlayerListerService.class);
     private static final int BUDGET = 200;
     
     private List<Player> players;
@@ -56,74 +52,53 @@ public class PlayerListerService {
         parseCsv(file);
         return players;
     }
-    
-    public List<Player> generateStarters() {
+
+	public List<Player> generateStarters() {
     	List<Player> starters = new ArrayList<Player>();
     	
-    	List<Variable> variables = new ArrayList<>();
-    	for (Player player : players) {
-    		Variable variable = Variable.make(player.getPlayerName()).lower(0).upper(1).weight(player.avarageMinutes() * player.getAvgPointsPerMinute()).integer(true);
-    		variables.add(variable);
-    	}
-    	
     	ExpressionsBasedModel model = new ExpressionsBasedModel();
-    	for (Variable variable : variables) {
-    		model.addVariable(variable);
+    	for (Player player : players) {
+    		model.addVariable(Variable.make(player.getPlayerName()).lower(0).upper(1).weight(player.avarageMinutes() * player.getAvgPointsPerMinute()).integer(true));
     	}
     	
     	Expression pointGuardCount = model.addExpression("Point guard count").lower(1).upper(3);
-    	for (Player player : players) {
-    		if (Position.PG == player.getPosition()) {
-    			pointGuardCount.set(players.indexOf(player), 1);
-    		}
-    	}
+    	setExpression(pointGuardCount, Position.PG);
     	
     	Expression shootingGuardCount = model.addExpression("Shooting guard count").lower(1).upper(3);
-    	for (Player player : players) {
-    		if (Position.SG == player.getPosition()) {
-    			shootingGuardCount.set(players.indexOf(player), 1);
-    		}
-    	}
+    	setExpression(shootingGuardCount, Position.SG);
     	
     	Expression smallForwardCount = model.addExpression("Small forward count").lower(1).upper(3);
-    	for (Player player : players) {
-    		if (Position.SF == player.getPosition()) {
-    			smallForwardCount.set(players.indexOf(player), 1);
-    		}
-    	}
+    	setExpression(smallForwardCount, Position.SF);
     	
     	Expression powerForwardCount = model.addExpression("Power forward count").lower(1).upper(3);
-    	for (Player player : players) {
-    		if (Position.PF == player.getPosition()) {
-    			powerForwardCount.set(players.indexOf(player), 1);
-    		}
-    	}
+    	setExpression(powerForwardCount, Position.PF);
     	
     	Expression centerCount = model.addExpression("Center count").lower(1).upper(2);
-    	for (Player player : players) {
-    		if (Position.C == player.getPosition()) {
-    			centerCount.set(players.indexOf(player), 1);
-    		}
-    	}
+    	setExpression(centerCount, Position.C);
     	
     	Expression salaryMax = model.addExpression("Salary").lower(1).upper(BUDGET);
-    	for (Player player : players) {
-    		salaryMax.set(players.indexOf(player), player.getSalary());
-    	}
-    	
     	Expression max8Players = model.addExpression("Max 8 players").lower(8).upper(8);
     	for (Player player : players) {
+    		salaryMax.set(players.indexOf(player), player.getSalary());
     		max8Players.set(players.indexOf(player), 1);
     	}
     	
     	Optimisation.Result result = model.maximise();
     	for (int i = 0; i < players.size(); i++) {
-    		if (0.5 < result.doubleValue(i)) {
+    		if (0.9 < result.doubleValue(i)) {
     			starters.add(players.get(i));
     		}
     	}
     	
     	return starters;
+	}
+
+	private void setExpression(Expression expression, Position position) {
+		for (Player player : players) {
+    		if (position == player.getPosition()) {
+    			expression.set(players.indexOf(player), 1);
+    		}
+    	}
 	}
 
 	private void parseCsv(MultipartFile file) {
