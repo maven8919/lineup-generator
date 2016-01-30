@@ -32,8 +32,8 @@ public class CsvFileController {
     @ModelAttribute(PLAYERS_MODEL_ATTRIBUTE_NAME)
     public List<PlayerSummaryView> players(@RequestParam(FILE_FORM_NAME) MultipartFile file) {
         List<Player> players = playerListerService.listPlayers(file);
-//        List<Player> starters = playerListerService.generateStarters(players);
-        return playerToSummaryTranslator.translatePlayer(players);
+        List<Player> starters = playerListerService.generateStarters();
+        return playerToSummaryTranslator.translatePlayer(starters);
     }
     
     @RequestMapping(value=CSV_FILE_REQUEST_MAPPING, method=RequestMethod.POST)

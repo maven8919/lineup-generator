@@ -3,9 +3,13 @@ package com.maven8919.lineupgenerator.service;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.optim.linear.LinearConstraint;
+import org.apache.commons.math3.optim.linear.LinearObjectiveFunction;
+import org.apache.commons.math3.optim.linear.Relationship;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -41,17 +45,59 @@ public class PlayerListerService {
 
     private static final Logger log = LoggerFactory.getLogger(PlayerListerService.class);
     private static final int BUDGET = 200;
+    
+    private List<Player> players;
 
     @Autowired
     private Environment env;
-
+    
     public List<Player> listPlayers(MultipartFile file) {
-        List<Player> players = parseCsv(file);
+        parseCsv(file);
         return players;
     }
+    
+    public List<Player> generateStarters() {
+    	double[] salaries = getPlayerSalaries();
+    	double[] pointGuards = getPositionConstraints(Position.PG);
+    	double[] shootingGuards = getPositionConstraints(Position.SG);
+    	double[] smallForwards = getPositionConstraints(Position.SF);
+    	double[] powerForwards = getPositionConstraints(Position.PF);
+    	double[] centers = getPositionConstraints(Position.C);
+    	
+    	LinearObjectiveFunction function = new LinearObjectiveFunction(salaries, 0);
+    	Collection<LinearConstraint> constraints = new ArrayList<>();
+    	constraints.add(new LinearConstraint(pointGuards, Relationship.GEQ, 1));
+    	constraints.add(new LinearConstraint(pointGuards, Relationship.LEQ, 3));
+    	constraints.add(new LinearConstraint(shootingGuards, Relationship.GEQ, 1));
+    	constraints.add(new LinearConstraint(shootingGuards, Relationship.LEQ, 3));
+    	constraints.add(new LinearConstraint(smallForwards, Relationship.GEQ, 1));
+    	constraints.add(new LinearConstraint(smallForwards, Relationship.LEQ, 3));
+    	constraints.add(new LinearConstraint(powerForwards, Relationship.GEQ, 1));
+    	constraints.add(new LinearConstraint(powerForwards, Relationship.LEQ, 3));
+    	return null;
+	}
 
-    private List<Player> parseCsv(MultipartFile file) {
-        List<Player> players = new ArrayList<>();
+	private double[] getPlayerSalaries() {
+    	double[] result = new double[players.size()];
+    	for (int i = 0; i < players.size(); i++) {
+    		result[i] = players.get(i).getSalary();
+    	}
+		return result;
+	}
+
+	private double[] getPositionConstraints(Position position) {
+		double[] result = new double[players.size()];
+		for (int i = 0; i < players.size(); i++)
+			if (position == players.get(i).getPosition()) {
+				result[i] = 1;
+			} else {
+				result[i] = 0;
+		}
+		return result;
+	}
+	
+    private void parseCsv(MultipartFile file) {
+        players = new ArrayList<>();
         ICsvMapReader mapReader = null;
         try {
             mapReader = new CsvMapReader(new InputStreamReader(file.getInputStream()), CsvPreference.STANDARD_PREFERENCE);
@@ -76,7 +122,6 @@ public class PlayerListerService {
                 }
             }
         }
-        return players;
     }
 
     private static CellProcessor[] getProcessors() {
@@ -97,12 +142,12 @@ public class PlayerListerService {
         return processors;
     }
 
-    private Player mapRowToPlayer(Map<String, Object> players) {
-        String firstName = convertToLowerCaseAndRemoveSpecialCharacters((String) players.get("First Name"));
-        String lastName = convertToLowerCaseAndRemoveSpecialCharacters((String) players.get("Last Name"));
+    private Player mapRowToPlayer(Map<String, Object> playersMap) {
+        String firstName = convertToLowerCaseAndRemoveSpecialCharacters((String) playersMap.get("First Name"));
+        String lastName = convertToLowerCaseAndRemoveSpecialCharacters((String) playersMap.get("Last Name"));
         String playerName = firstName + "-" + lastName;
-        int salary = (int) players.get("Salary");
-        Position position = parsePosition((String) players.get("Position"));
+        int salary = (int) playersMap.get("Salary");
+        Position position = parsePosition((String) playersMap.get("Position"));
         Player player = new Player(playerName, position, salary);
         return player;
     }
