@@ -4,16 +4,43 @@
 		<meta charset="utf-8"/>
     	<script type="text/javascript" src="/webjars/jquery/2.2.0/jquery.min.js"></script>
     	<script type="text/javascript" src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<link rel='stylesheet' th:href="@{/css/reset.css}" href='/css/reset.css'/>
 		<link rel='stylesheet' href='/webjars/bootstrap/3.3.6/css/bootstrap.min.css'/>
+		<link rel='stylesheet' th:href="@{/css/main.css}" href='css/main.css'/>
+		<link href='https://fonts.googleapis.com/css?family=Knewave' rel='stylesheet' type='text/css' />
 	</head>
 	<body>
-		<form action="upload" th:action="@{/csvFile}" method="post" enctype="multipart/form-data">
-			<div class="form-group">
-				<label for="playersCsv">Csv input</label>
-				<input type="file" name="playersCsv" id="playersCsv" />
-				<input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>
-				<button type="submit" class="btn btn-default">Upload</button>
+		<div class="container">
+			<div class="header">
+				<h1>Lineup optimizer</h1>
 			</div>
-		</form>
+			<div class="img-container">
+				<img class="league-img" id="nba-img" alt="Nba logo" src="/images/nba.png" />
+				<img class="league-img" id="nfl-img" alt="Nfl logo" src="/images/nfl.jpg" />
+				<img class="league-img" id="mlb-img" alt="Mlb logo" src="/images/mlb.png" />
+				<img class="league-img" id="nhl-img" alt="Nhl logo" src="/images/nhl.jpg" />
+			</div>
+			<div class="upload-form" id="nba-form">
+				<form action="upload" th:action="@{/csvFile}" method="post" enctype="multipart/form-data">
+					<div class="form-group">
+						<label for="playersCsv">Csv input</label>
+ 						<input type="file" name="playersCsv" id="playersCsv" />
+						<input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>
+						<button type="submit" class="btn btn-default">Upload</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#nba-form").hide();
+				
+				$("#nba-img").click(function() {
+					$("#nba-form").slideToggle();
+				});
+				
+			});
+		</script>
 	</body>
 </html>

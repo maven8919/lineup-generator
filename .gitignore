@@ -15,6 +15,7 @@ buildNumber.properties
 mvnw
 mvnw.cmd
 lineup.log
+src/main/resources/static
 
 
 ### Java ###
