@@ -84,66 +84,66 @@ public class StatLine {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        long temp;
-        temp = Double.doubleToLongBits(dfScore);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + ((fieldGoalStats == null) ? 0 : fieldGoalStats.hashCode());
-        result = prime * result + ((freeThrowStats == null) ? 0 : freeThrowStats.hashCode());
-        result = prime * result + ((location == null) ? 0 : location.hashCode());
-        result = prime * result + minutes;
-        result = prime * result + ((miscStats == null) ? 0 : miscStats.hashCode());
-        result = prime * result + ((opponent == null) ? 0 : opponent.hashCode());
-        result = prime * result + ((reboundStats == null) ? 0 : reboundStats.hashCode());
-        result = prime * result + ((threePointStats == null) ? 0 : threePointStats.hashCode());
-        return result;
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(dfScore);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((fieldGoalStats == null) ? 0 : fieldGoalStats.hashCode());
+		result = prime * result + ((freeThrowStats == null) ? 0 : freeThrowStats.hashCode());
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
+		result = prime * result + minutes;
+		result = prime * result + ((miscStats == null) ? 0 : miscStats.hashCode());
+		result = prime * result + ((opponent == null) ? 0 : opponent.hashCode());
+		result = prime * result + ((reboundStats == null) ? 0 : reboundStats.hashCode());
+		result = prime * result + ((threePointStats == null) ? 0 : threePointStats.hashCode());
+		return result;
+	}
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        StatLine other = (StatLine) obj;
-        if (Double.doubleToLongBits(dfScore) != Double.doubleToLongBits(other.dfScore))
-            return false;
-        if (fieldGoalStats == null) {
-            if (other.fieldGoalStats != null)
-                return false;
-        } else if (!fieldGoalStats.equals(other.fieldGoalStats))
-            return false;
-        if (freeThrowStats == null) {
-            if (other.freeThrowStats != null)
-                return false;
-        } else if (!freeThrowStats.equals(other.freeThrowStats))
-            return false;
-        if (location != other.location)
-            return false;
-        if (minutes != other.minutes)
-            return false;
-        if (miscStats == null) {
-            if (other.miscStats != null)
-                return false;
-        } else if (!miscStats.equals(other.miscStats))
-            return false;
-        if (opponent != other.opponent)
-            return false;
-        if (reboundStats == null) {
-            if (other.reboundStats != null)
-                return false;
-        } else if (!reboundStats.equals(other.reboundStats))
-            return false;
-        if (threePointStats == null) {
-            if (other.threePointStats != null)
-                return false;
-        } else if (!threePointStats.equals(other.threePointStats))
-            return false;
-        return true;
-    }
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		StatLine other = (StatLine) obj;
+		if (Double.doubleToLongBits(dfScore) != Double.doubleToLongBits(other.dfScore))
+			return false;
+		if (fieldGoalStats == null) {
+			if (other.fieldGoalStats != null)
+				return false;
+		} else if (!fieldGoalStats.equals(other.fieldGoalStats))
+			return false;
+		if (freeThrowStats == null) {
+			if (other.freeThrowStats != null)
+				return false;
+		} else if (!freeThrowStats.equals(other.freeThrowStats))
+			return false;
+		if (location != other.location)
+			return false;
+		if (minutes != other.minutes)
+			return false;
+		if (miscStats == null) {
+			if (other.miscStats != null)
+				return false;
+		} else if (!miscStats.equals(other.miscStats))
+			return false;
+		if (opponent != other.opponent)
+			return false;
+		if (reboundStats == null) {
+			if (other.reboundStats != null)
+				return false;
+		} else if (!reboundStats.equals(other.reboundStats))
+			return false;
+		if (threePointStats == null) {
+			if (other.threePointStats != null)
+				return false;
+		} else if (!threePointStats.equals(other.threePointStats))
+			return false;
+		return true;
+	}
     
 }

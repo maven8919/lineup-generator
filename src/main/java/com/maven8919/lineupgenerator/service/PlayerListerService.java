@@ -3,17 +3,17 @@ package com.maven8919.lineupgenerator.service;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.math3.optim.linear.LinearConstraint;
-import org.apache.commons.math3.optim.linear.LinearObjectiveFunction;
-import org.apache.commons.math3.optim.linear.Relationship;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.ojalgo.optimisation.Expression;
+import org.ojalgo.optimisation.ExpressionsBasedModel;
+import org.ojalgo.optimisation.Optimisation;
+import org.ojalgo.optimisation.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +40,18 @@ import com.maven8919.lineupgenerator.domain.StatLine;
 import com.maven8919.lineupgenerator.domain.Team;
 import com.maven8919.lineupgenerator.domain.ThreePointStats;
 
+import net.sf.javailp.Linear;
+import net.sf.javailp.OptType;
+import net.sf.javailp.Problem;
+import net.sf.javailp.Result;
+import net.sf.javailp.Solver;
+import net.sf.javailp.SolverFactory;
+import net.sf.javailp.SolverFactoryLpSolve;
+
 @Service
 public class PlayerListerService {
 
-    private static final Logger log = LoggerFactory.getLogger(PlayerListerService.class);
+	private static final Logger log = LoggerFactory.getLogger(PlayerListerService.class);
     private static final int BUDGET = 200;
     
     private List<Player> players;
@@ -63,17 +71,86 @@ public class PlayerListerService {
     	double[] smallForwards = getPositionConstraints(Position.SF);
     	double[] powerForwards = getPositionConstraints(Position.PF);
     	double[] centers = getPositionConstraints(Position.C);
+    	double[] max8 = getMax8();
     	
-    	LinearObjectiveFunction function = new LinearObjectiveFunction(salaries, 0);
-    	Collection<LinearConstraint> constraints = new ArrayList<>();
-    	constraints.add(new LinearConstraint(pointGuards, Relationship.GEQ, 1));
-    	constraints.add(new LinearConstraint(pointGuards, Relationship.LEQ, 3));
-    	constraints.add(new LinearConstraint(shootingGuards, Relationship.GEQ, 1));
-    	constraints.add(new LinearConstraint(shootingGuards, Relationship.LEQ, 3));
-    	constraints.add(new LinearConstraint(smallForwards, Relationship.GEQ, 1));
-    	constraints.add(new LinearConstraint(smallForwards, Relationship.LEQ, 3));
-    	constraints.add(new LinearConstraint(powerForwards, Relationship.GEQ, 1));
-    	constraints.add(new LinearConstraint(powerForwards, Relationship.LEQ, 3));
+    	List<Variable> variables = new ArrayList<>();
+    	for (Player player : players) {
+    		Variable variable = Variable.make(player.getPlayerName()).lower(0).upper(1).weight(player.getSalary()).integer(true);
+    		variables.add(variable);
+    	}
+    	
+    	ExpressionsBasedModel model = new ExpressionsBasedModel();
+    	for (Variable variable : variables) {
+    		model.addVariable(variable);
+    	}
+    	
+    	Expression pointGuardCount = model.addExpression("Point guard count").lower(1).upper(3);
+    	for (Player player : players) {
+    		if (Position.PG == player.getPosition()) {
+    			pointGuardCount.set(players.indexOf(player), 1);
+    		}
+    	}
+    	
+    	Expression shootingGuardCount = model.addExpression("Shooting guard count").lower(1).upper(3);
+    	for (Player player : players) {
+    		if (Position.SG == player.getPosition()) {
+    			shootingGuardCount.set(players.indexOf(player), 1);
+    		}
+    	}
+    	
+    	Expression smallForwardCount = model.addExpression("Small forward count").lower(1).upper(3);
+    	for (Player player : players) {
+    		if (Position.SF == player.getPosition()) {
+    			smallForwardCount.set(players.indexOf(player), 1);
+    		}
+    	}
+    	
+    	Expression powerForwardCount = model.addExpression("Power forward count").lower(1).upper(3);
+    	for (Player player : players) {
+    		if (Position.PF == player.getPosition()) {
+    			powerForwardCount.set(players.indexOf(player), 1);
+    		}
+    	}
+    	
+    	Expression centerCount = model.addExpression("Center count").lower(1).upper(3);
+    	for (Player player : players) {
+    		if (Position.C == player.getPosition()) {
+    			centerCount.set(players.indexOf(player), 1);
+    		}
+    	}
+    	
+    	Optimisation.Result result = model.maximise();
+    	log.info(result.toString());
+    	
+//    	LinearObjectiveFunction func = new LinearObjectiveFunction(salaries, 0);
+//    	Collection<LinearConstraint> constraints = new ArrayList<>();
+//    	constraints.add(new LinearConstraint(pointGuards, Relationship.GEQ, 1));
+//    	constraints.add(new LinearConstraint(pointGuards, Relationship.LEQ, 3));
+//    	constraints.add(new LinearConstraint(shootingGuards, Relationship.GEQ, 1));
+//    	constraints.add(new LinearConstraint(shootingGuards, Relationship.LEQ, 3));
+//    	constraints.add(new LinearConstraint(smallForwards, Relationship.GEQ, 1));
+//    	constraints.add(new LinearConstraint(smallForwards, Relationship.LEQ, 3));
+//    	constraints.add(new LinearConstraint(powerForwards, Relationship.GEQ, 1));
+//    	constraints.add(new LinearConstraint(powerForwards, Relationship.LEQ, 3));
+//    	constraints.add(new LinearConstraint(centers, Relationship.GEQ, 1));
+//    	constraints.add(new LinearConstraint(centers, Relationship.LEQ, 2));
+//    	constraints.add(new LinearConstraint(salaries, Relationship.LEQ, BUDGET));
+//    	for (int i = 0; i < players.size(); i++) {
+//    		double[] _1playerJustOnceConstraint = create1PlayerConstraintAtSpecificIndex(i);
+//    		constraints.add(new LinearConstraint(_1playerJustOnceConstraint, Relationship.LEQ, 1));
+//    	}
+//    	constraints.add(new LinearConstraint(max8, Relationship.EQ, 8));
+    	
+//    	SimplexSolver solver = new SimplexSolver();
+//    	PointValuePair solution = solver.optimize(new MaxIter(Integer.MAX_VALUE), func, new LinearConstraintSet(constraints),
+//    			GoalType.MAXIMIZE, new NonNegativeConstraint(true));
+//    	
+//    	System.out.println(solution.getValue());
+//    	double[] sol = solution.getPoint();
+//    	for (int i = 0; i < sol.length; i++) {
+//    		System.out.println(sol[i]);
+//    	}
+    	
     	return null;
 	}
 
@@ -93,6 +170,23 @@ public class PlayerListerService {
 			} else {
 				result[i] = 0;
 		}
+		return result;
+	}
+	
+	private double[] getMax8() {
+		double[] result = new double[players.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = 1;
+		}
+		return result;
+	}
+	
+	private double[] create1PlayerConstraintAtSpecificIndex(int index) {
+		double[] result = new double[players.size()];
+		for (int i = 0; i < players.size(); i++) {
+			result[i] = 0;
+		}
+		result[index] = 1;
 		return result;
 	}
 	

@@ -69,40 +69,40 @@ public class Player implements Comparable<Player> {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((playerName == null) ? 0 : playerName.hashCode());
-        result = prime * result + ((position == null) ? 0 : position.hashCode());
-        result = prime * result + salary;
-        result = prime * result + ((statLines == null) ? 0 : statLines.hashCode());
-        return result;
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((playerName == null) ? 0 : playerName.hashCode());
+		result = prime * result + ((position == null) ? 0 : position.hashCode());
+		result = prime * result + salary;
+		result = prime * result + ((statLines == null) ? 0 : statLines.hashCode());
+		return result;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Player other = (Player) obj;
-        if (playerName == null) {
-            if (other.playerName != null)
-                return false;
-        } else if (!playerName.equals(other.playerName))
-            return false;
-        if (position != other.position)
-            return false;
-        if (salary != other.salary)
-            return false;
-        if (statLines == null) {
-            if (other.statLines != null)
-                return false;
-        } else if (!statLines.equals(other.statLines))
-            return false;
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Player other = (Player) obj;
+		if (playerName == null) {
+			if (other.playerName != null)
+				return false;
+		} else if (!playerName.equals(other.playerName))
+			return false;
+		if (position != other.position)
+			return false;
+		if (salary != other.salary)
+			return false;
+		if (statLines == null) {
+			if (other.statLines != null)
+				return false;
+		} else if (!statLines.equals(other.statLines))
+			return false;
+		return true;
+	}
     
 }
