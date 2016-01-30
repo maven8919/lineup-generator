@@ -55,7 +55,7 @@ public class Player implements Comparable<Player> {
     public int compareTo(Player otherPlayer) {
         Double avgPointsPerMinute = this.getAvgPointsPerMinute() * this.avarageMinutes();
         Double otherAvgPointsPerMinute = otherPlayer.getAvgPointsPerMinute() * otherPlayer.avarageMinutes();
-        return avgPointsPerMinute.compareTo(otherAvgPointsPerMinute); 
+        return avgPointsPerMinute.compareTo(otherAvgPointsPerMinute);
     }
 
     public double getAvgPointsPerMinute() {

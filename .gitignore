@@ -14,6 +14,7 @@ buildNumber.properties
 .mvn/
 mvnw
 mvnw.cmd
+lineup.log
 
 
 ### Java ###

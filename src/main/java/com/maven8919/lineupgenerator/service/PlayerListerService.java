@@ -3,6 +3,7 @@ package com.maven8919.lineupgenerator.service;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -40,14 +41,6 @@ import com.maven8919.lineupgenerator.domain.StatLine;
 import com.maven8919.lineupgenerator.domain.Team;
 import com.maven8919.lineupgenerator.domain.ThreePointStats;
 
-import net.sf.javailp.Linear;
-import net.sf.javailp.OptType;
-import net.sf.javailp.Problem;
-import net.sf.javailp.Result;
-import net.sf.javailp.Solver;
-import net.sf.javailp.SolverFactory;
-import net.sf.javailp.SolverFactoryLpSolve;
-
 @Service
 public class PlayerListerService {
 
@@ -65,17 +58,11 @@ public class PlayerListerService {
     }
     
     public List<Player> generateStarters() {
-    	double[] salaries = getPlayerSalaries();
-    	double[] pointGuards = getPositionConstraints(Position.PG);
-    	double[] shootingGuards = getPositionConstraints(Position.SG);
-    	double[] smallForwards = getPositionConstraints(Position.SF);
-    	double[] powerForwards = getPositionConstraints(Position.PF);
-    	double[] centers = getPositionConstraints(Position.C);
-    	double[] max8 = getMax8();
+    	List<Player> starters = new ArrayList<Player>();
     	
     	List<Variable> variables = new ArrayList<>();
     	for (Player player : players) {
-    		Variable variable = Variable.make(player.getPlayerName()).lower(0).upper(1).weight(player.getSalary()).integer(true);
+    		Variable variable = Variable.make(player.getPlayerName()).lower(0).upper(1).weight(player.avarageMinutes() * player.getAvgPointsPerMinute()).integer(true);
     		variables.add(variable);
     	}
     	
@@ -112,85 +99,34 @@ public class PlayerListerService {
     		}
     	}
     	
-    	Expression centerCount = model.addExpression("Center count").lower(1).upper(3);
+    	Expression centerCount = model.addExpression("Center count").lower(1).upper(2);
     	for (Player player : players) {
     		if (Position.C == player.getPosition()) {
     			centerCount.set(players.indexOf(player), 1);
     		}
     	}
     	
-    	Optimisation.Result result = model.maximise();
-    	log.info(result.toString());
-    	
-//    	LinearObjectiveFunction func = new LinearObjectiveFunction(salaries, 0);
-//    	Collection<LinearConstraint> constraints = new ArrayList<>();
-//    	constraints.add(new LinearConstraint(pointGuards, Relationship.GEQ, 1));
-//    	constraints.add(new LinearConstraint(pointGuards, Relationship.LEQ, 3));
-//    	constraints.add(new LinearConstraint(shootingGuards, Relationship.GEQ, 1));
-//    	constraints.add(new LinearConstraint(shootingGuards, Relationship.LEQ, 3));
-//    	constraints.add(new LinearConstraint(smallForwards, Relationship.GEQ, 1));
-//    	constraints.add(new LinearConstraint(smallForwards, Relationship.LEQ, 3));
-//    	constraints.add(new LinearConstraint(powerForwards, Relationship.GEQ, 1));
-//    	constraints.add(new LinearConstraint(powerForwards, Relationship.LEQ, 3));
-//    	constraints.add(new LinearConstraint(centers, Relationship.GEQ, 1));
-//    	constraints.add(new LinearConstraint(centers, Relationship.LEQ, 2));
-//    	constraints.add(new LinearConstraint(salaries, Relationship.LEQ, BUDGET));
-//    	for (int i = 0; i < players.size(); i++) {
-//    		double[] _1playerJustOnceConstraint = create1PlayerConstraintAtSpecificIndex(i);
-//    		constraints.add(new LinearConstraint(_1playerJustOnceConstraint, Relationship.LEQ, 1));
-//    	}
-//    	constraints.add(new LinearConstraint(max8, Relationship.EQ, 8));
-    	
-//    	SimplexSolver solver = new SimplexSolver();
-//    	PointValuePair solution = solver.optimize(new MaxIter(Integer.MAX_VALUE), func, new LinearConstraintSet(constraints),
-//    			GoalType.MAXIMIZE, new NonNegativeConstraint(true));
-//    	
-//    	System.out.println(solution.getValue());
-//    	double[] sol = solution.getPoint();
-//    	for (int i = 0; i < sol.length; i++) {
-//    		System.out.println(sol[i]);
-//    	}
-    	
-    	return null;
-	}
-
-	private double[] getPlayerSalaries() {
-    	double[] result = new double[players.size()];
-    	for (int i = 0; i < players.size(); i++) {
-    		result[i] = players.get(i).getSalary();
+    	Expression salaryMax = model.addExpression("Salary").lower(1).upper(BUDGET);
+    	for (Player player : players) {
+    		salaryMax.set(players.indexOf(player), player.getSalary());
     	}
-		return result;
+    	
+    	Expression max8Players = model.addExpression("Max 8 players").lower(8).upper(8);
+    	for (Player player : players) {
+    		max8Players.set(players.indexOf(player), 1);
+    	}
+    	
+    	Optimisation.Result result = model.maximise();
+    	for (int i = 0; i < players.size(); i++) {
+    		if (0.5 < result.doubleValue(i)) {
+    			starters.add(players.get(i));
+    		}
+    	}
+    	
+    	return starters;
 	}
 
-	private double[] getPositionConstraints(Position position) {
-		double[] result = new double[players.size()];
-		for (int i = 0; i < players.size(); i++)
-			if (position == players.get(i).getPosition()) {
-				result[i] = 1;
-			} else {
-				result[i] = 0;
-		}
-		return result;
-	}
-	
-	private double[] getMax8() {
-		double[] result = new double[players.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = 1;
-		}
-		return result;
-	}
-	
-	private double[] create1PlayerConstraintAtSpecificIndex(int index) {
-		double[] result = new double[players.size()];
-		for (int i = 0; i < players.size(); i++) {
-			result[i] = 0;
-		}
-		result[index] = 1;
-		return result;
-	}
-	
-    private void parseCsv(MultipartFile file) {
+	private void parseCsv(MultipartFile file) {
         players = new ArrayList<>();
         ICsvMapReader mapReader = null;
         try {

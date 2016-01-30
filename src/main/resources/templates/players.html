@@ -7,84 +7,20 @@
 		<link rel='stylesheet' href='/webjars/bootstrap/3.3.6/css/bootstrap.min.css'/>
 	</head>
 	<body>
-<!--         <table class="table table-striped table-bordered"> -->
-<!--             <tr> -->
-<!--                 <th>Player name</th> -->
-<!--                 <th>Position</th> -->
-<!--                 <th>Salary</th> -->
-<!--             </tr> -->
-<!--             <tr th:each="player : ${players}"> -->
-<!--                 <td th:text="${player.playerName}">Player name</td> -->
-<!--                 <td th:text="${player.position}">Position</td> -->
-<!--                 <td th:text="${player.salary}">Salary</td> -->
-<!--                 <td> -->
-                    <table class="table table-striped table-bordered">
-                        <tr>
-                            <th>Position</th>
-                            <th>Player</th>
-                            <th>Forecasted Points</th>
-                            <th>Salary</th>
-                            <th>Selected</th>
-                        </tr>
-                        <tr th:each="player : ${players}">
-                            <td th:text="${player.position}">Position</td>
-                            <td th:text="${player.playerName}">Player</td>
-                            <td th:text="${player.forecastedPoints}">Forecasted Points</td>
-                            <td th:text="${player.salary}">Salary</td>
-                            <td></td>
-                        </tr>
-                    </table>
-                    
-                    
-<!--                         <tr> -->
-<!--                             <th>Opponent</th> -->
-<!--                             <th>Location</th> -->
-<!--                             <th>DF Score</th> -->
-<!--                             <th>Minutes</th> -->
-<!--                             <th>Points</th> -->
-<!--                             <th>Assists</th> -->
-<!--                             <th>Steals</th> -->
-<!--                             <th>Blocks</th> -->
-<!--                             <th>Turnovers</th> -->
-<!--                             <th>Total rebounds</th> -->
-<!--                             <th>Off. rebounds</th> -->
-<!--                             <th>Def. rebounds</th> -->
-<!--                             <th>3P made</th> -->
-<!--                             <th>3P attempted</th> -->
-<!--                             <th>3P %</th> -->
-<!--                             <th>FG made</th> -->
-<!--                             <th>FG attempted</th> -->
-<!--                             <th>FG %</th> -->
-<!--                             <th>FT made</th> -->
-<!--                             <th>FT attempted</th> -->
-<!--                             <th>FT %</th> -->
-<!--                         </tr> -->
-<!--                         <tr th:each="stat : ${player.statLines}"> -->
-<!--                             <td th:text="${stat.opponent}">Opponent</td> -->
-<!--                             <td th:text="${stat.location}">Location</td> -->
-<!--                             <td th:text="${stat.dfScore}">DF Score</td> -->
-<!--                             <td th:text="${stat.minutes}">Minutes</td> -->
-<!--                             <td th:text="${stat.miscStats.points}">Points</td> -->
-<!--                             <td th:text="${stat.miscStats.assists}">Assists</td> -->
-<!--                             <td th:text="${stat.miscStats.steals}">Steals</td> -->
-<!--                             <td th:text="${stat.miscStats.blocks}">Blocks</td> -->
-<!--                             <td th:text="${stat.miscStats.turnovers}">Turnovers</td> -->
-<!--                             <td th:text="${stat.reboundStats.totalRebounds}">Total rebounds</td> -->
-<!--                             <td th:text="${stat.reboundStats.offensiveRebounds}">Off. rebounds</td> -->
-<!--                             <td th:text="${stat.reboundStats.defensiveRebounds}">Def. rebounds</td> -->
-<!--                             <td th:text="${stat.threePointStats.threePointsMade}">3P made</td> -->
-<!--                             <td th:text="${stat.threePointStats.threePointsAttempted}">3P attempted</td> -->
-<!--                             <td th:text="${stat.threePointStats.threePointsPercentage}">3P %</td> -->
-<!--                             <td th:text="${stat.fieldGoalStats.fieldGoalsMade}">FG made</td> -->
-<!--                             <td th:text="${stat.fieldGoalStats.fieldGoalsAttempted}">FG attempted</td> -->
-<!--                             <td th:text="${stat.fieldGoalStats.fieldGoalsPercentage}">FG %</td> -->
-<!--                             <td th:text="${stat.freeThrowStats.freeThrowsMade}">FT made</td> -->
-<!--                             <td th:text="${stat.freeThrowStats.freeThrowsAttempted}">FT attempted</td> -->
-<!--                             <td th:text="${stat.freeThrowStats.freeThrowsPercentage}">FT %</td> -->
-<!--                         </tr> -->
-<!--                     </table> -->
-<!--                 </td> -->
-<!--             </tr> -->
-<!--         </table> -->
+		<h1>Starters</h1>
+		<table class="table table-striped table-bordered">
+		    <tr>
+		        <th>Position</th>
+		        <th>Player</th>
+		        <th>Forecasted Points</th>
+		        <th>Salary</th>
+		    </tr>
+		    <tr th:each="player : ${players}">
+		        <td th:text="${player.position}">Position</td>
+		        <td th:text="${player.playerName}">Player</td>
+		        <td th:text="${player.forecastedPoints}">Forecasted Points</td>
+		        <td th:text="${player.salary}">Salary</td>
+		    </tr>
+		</table>
 	</body>
 </html>
