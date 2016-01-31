@@ -24,7 +24,9 @@
 				<form action="upload" th:action="@{/csvFile}" method="post" enctype="multipart/form-data">
 					<div class="form-group">
 						<label for="playersCsv">Csv input</label>
- 						<input type="file" name="playersCsv" id="playersCsv" />
+						<div class="file-input">
+	 						<input type="file" name="playersCsv" id="playersCsv" />
+						</div>
 						<input type="hidden"  name="${_csrf.parameterName}"   value="${_csrf.token}"/>
 						<button type="submit" class="btn btn-default">Upload</button>
 					</div>

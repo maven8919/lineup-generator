@@ -3,6 +3,7 @@ package com.maven8919.lineupgenerator.service;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -67,11 +68,17 @@ public class PlayerListerService {
     	Expression shootingGuardCount = model.addExpression("Shooting guard count").lower(1).upper(3);
     	setExpression(shootingGuardCount, Position.SG);
     	
+    	Expression guardCount = model.addExpression("Guard count").lower(3).upper(4);
+    	setExpression(guardCount, Arrays.asList(Position.PG, Position.SG));
+    	
     	Expression smallForwardCount = model.addExpression("Small forward count").lower(1).upper(3);
     	setExpression(smallForwardCount, Position.SF);
     	
     	Expression powerForwardCount = model.addExpression("Power forward count").lower(1).upper(3);
     	setExpression(powerForwardCount, Position.PF);
+    	
+    	Expression forwardCount = model.addExpression("Forward count").lower(3).upper(4);
+    	setExpression(forwardCount, Arrays.asList(Position.SF, Position.PF));
     	
     	Expression centerCount = model.addExpression("Center count").lower(1).upper(2);
     	setExpression(centerCount, Position.C);
@@ -90,7 +97,17 @@ public class PlayerListerService {
     		}
     	}
     	
-    	return starters;
+    	return sortStarter(starters);
+	}
+
+	private void setExpression(Expression expression, List<Position> positions) {
+		for (Player player : players) {
+			for (Position position : positions) {
+				if (position == player.getPosition()) {
+					expression.set(players.indexOf(player), 1);
+				}
+			}
+		}
 	}
 
 	private void setExpression(Expression expression, Position position) {
@@ -99,6 +116,30 @@ public class PlayerListerService {
     			expression.set(players.indexOf(player), 1);
     		}
     	}
+	}
+
+	private List<Player> sortStarter(List<Player> starters) {
+		List<Player> result = new ArrayList<>();
+		addPlayer(result, starters, Arrays.asList(Position.PG));
+		addPlayer(result, starters, Arrays.asList(Position.SG));
+		addPlayer(result, starters, Arrays.asList(Position.PG, Position.SG));
+		addPlayer(result, starters, Arrays.asList(Position.SF));
+		addPlayer(result, starters, Arrays.asList(Position.PF));
+		addPlayer(result, starters, Arrays.asList(Position.SF, Position.PF));
+		addPlayer(result, starters, Arrays.asList(Position.C));
+		addPlayer(result, starters, Arrays.asList(Position.PG, Position.SG, Position.SF, Position.PF, Position.C));
+		return result;
+	}
+	
+	private void addPlayer(List<Player> result, List<Player> starters, List<Position> positions) {
+		for (Position position : positions) {
+			for (Player starter : starters) {
+				if (starter.getPosition() == position && !result.contains(starter)) {
+					result.add(starter);
+					return;
+				}
+			}
+		}
 	}
 
 	private void parseCsv(MultipartFile file) {
