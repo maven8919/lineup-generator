@@ -1,0 +1,82 @@
+body {
+	background-color: #F61B1B;
+}
+
+.container {
+	width: 960px;
+	min-height: 100vh;
+	background-color: white;
+	margin: auto;
+	padding: 0px;
+}
+
+.header {
+	background-color: #FCFE05;
+	width: 100%;
+	height: 100px;
+	margin: 0px;
+	padding: 0px;
+	color: #DC1405;
+	font-family: 'Knewave', cursive;
+	text-align: center;
+}
+
+h1 {
+	margin: 0 auto;
+	width: 80%;
+	background-color: #FCFE05;
+	line-height: 100px;
+}
+
+.img-container {
+	width: 80%;
+	margin: 20px auto;
+}
+
+.league-img {
+	margin: 20px 40px;
+	cursor: pointer;
+	cursor: hand;
+}
+
+.upload-form {
+	width: 80%;
+	margin: 20px auto;
+	text-align: center;
+	border-style: solid;
+	border-color: #DC1405;
+	cursor: pointer;
+	cursor: hand;
+}
+
+label {
+	width: 80%;
+	margin: 0px auto;
+	background-color: #FCFE05;
+	border-style: solid;
+	border-color: #DC1405;
+	color: #DC1405;
+	border-radius: 10px;
+	height: 40px;
+	line-height: 40px;
+	font-family: 'Knewave', cursive;
+	margin-bottom: 20px;
+}
+
+.btn-default {
+	width: 40%;
+	margin: 0px auto;
+	background-color: #FCFE05;
+	color: #DC1405;
+	border-radius: 10px;
+	height: 40px;
+	line-height: 40px;
+	border: none;
+	font-family: 'Knewave', cursive;
+	margin-top: 20px;
+}
+
+.file-input {
+	width: 40%;
+	margin: 0px auto;
+}

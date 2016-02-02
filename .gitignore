@@ -15,7 +15,12 @@ buildNumber.properties
 mvnw
 mvnw.cmd
 lineup.log
-src/main/resources/static
+src/main/resources/static/images/
+src/main/resources/static/players/**
+src/main/resources/static/players/nba
+src/main/resources/static/players/nfl
+src/main/resources/static/players/mlb
+src/main/resources/static/players/nhl
 
 
 ### Java ###
